@@ -27,7 +27,7 @@ public class UserController(IUserRepository userRepository,IMapper mapper,Custom
     }
 
     [HttpGet("user/{userId}")]
-    public async Task<IActionResult> GetUserById (Guid userId)
+    public async Task<IActionResult> GetUserById (string? userId)
     {
         var user = await userRepository.GetUserById(userId);
 
@@ -85,7 +85,7 @@ public class UserController(IUserRepository userRepository,IMapper mapper,Custom
     }
 
     [HttpPatch("{customerId}")]
-    public async Task<IActionResult> UpdateUser(Guid customerId, [FromBody] UpdateRequest updateRequest)
+    public async Task<IActionResult> UpdateUser(string? customerId, [FromBody] UpdateRequest updateRequest)
     {
         try
         {

@@ -169,4 +169,5 @@ C:\Users\AbdelhafidhZARROUG\projects\web\web\obj\Debug\net9.0\ref\web.dll
 C:\Users\AbdelhafidhZARROUG\projects\web\web\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\AbdelhafidhZARROUG\projects\web\web\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\AbdelhafidhZARROUG\projects\web\web\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\AbdelhafidhZARROUG\projects\web\web\obj\Debug\net9.0\web.sourcelink.json
 C:\Users\AbdelhafidhZARROUG\projects\web\web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

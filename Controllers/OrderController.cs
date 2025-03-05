@@ -11,6 +11,7 @@ using web.Helpers.Pagination.Extensions;
 using web.DTO;
 using web.Helpers.Pagination;
 using web.Helpers.Params;
+using web.Entities;
 
 namespace web.Controllers;
 
@@ -47,11 +48,11 @@ public class OrderController(IUserRepository userRepository
     }
 
     [HttpGet("{userId}")]
-    public async Task<IActionResult> GetOrderByUser(Guid userId, [FromQuery] UserParams userParams)
+    public async Task<IActionResult> GetOrderByUser(string? userId, [FromQuery] UsersOrderDTO userParams)
     {
         try
         {
-            var user = await userRepository.GetUserById(userId);
+            var user = await userRepository.GetUserById(userId ?? userParams.CustomerId);
 
             if (user == null)
             {
@@ -66,12 +67,10 @@ public class OrderController(IUserRepository userRepository
 
             return Ok(pagedOrders);
         }
-
         catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
-
     }
 
     [HttpGet("Stat")]
@@ -132,19 +131,30 @@ public class OrderController(IUserRepository userRepository
     {
         try
         {
-            var order = context.Orders.FindAsync(orderId);
+            var order = await context.Orders.Where(x => x.Id.ToString() == orderId)
+                                            .FirstOrDefaultAsync();
 
-            if (order == null) return BadRequest("Order NotFound");
-            userRepository.DeleteUser(orderId);
+            if (order == null) return BadRequest("Order Not Found");
+
+            orderRepository.DeleteOrder(order);
+
             if (await userRepository.SaveAsync())
             {
                 return Ok();
             };
+
             return BadRequest();
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.InnerException.Message);
+            return BadRequest(ex.Message);
         }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Delivered(Guid? orderId)
+    {
+        await orderRepository.UpdateOrderStatus(orderId);
+        return Ok(await orderRepository.SaveAsync());
     }
 }

@@ -2,9 +2,10 @@
 
 
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+using AutoMapper.QueryableExtensions;
+using Azure;
 using Microsoft.EntityFrameworkCore;
-using web.Data;
+
 using web.DTO;
 using web.Entities;
 using web.Helpers.Pagination;
@@ -29,15 +30,41 @@ public class OrderRepository(CustomDbcontext context, IMapper mapper,ILogger<Ord
         }
     }
 
-    public async Task DeleteOrderAsync(string? orderId)
+    public void DeleteOrder(Order order)
     {
-        var order = await context.Orders.FindAsync(orderId);
-        if (order == null)
+        try
         {
-            logger.LogError("Order Not found");
+            context.Orders.Remove(order);
         }
+        catch(Exception ex)
+        {
+            logger.LogError(ex.Message);
+        }
+    }
 
-        context.Orders.Remove(order);
+    public async Task UpdateOrderStatus(Guid? orderId)
+    {
+       try
+        {
+            var order = await context.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+            if (order == null)
+            {
+                logger.LogError("order Not found");
+            }
+
+            var Delivery = order.isDelivered;
+
+            if (Delivery == true)
+            {
+                logger.LogWarning("the delivery is already Updated");
+                throw new Exception("the delivery is already Updated");
+            }
+            var updatedDate = mapper.Map<Order>(order);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex.Message);
+        }
     }
 
     #endregion
@@ -54,15 +81,16 @@ public class OrderRepository(CustomDbcontext context, IMapper mapper,ILogger<Ord
         return orderdto;
     }
 
-    public async Task<PagedList<Order>> GetOrdersAsync(OrderParams orderParams)
+    public async Task<PagedList<UsersOrderDTO>> GetOrdersAsync(OrderParams orderParams)
     {
-        var ordersQuery = context.Orders.OrderBy(x => x.Id);
+        var ordersQuery = context.Orders.OrderBy(x => x.Id)
+                                        .ProjectTo<UsersOrderDTO>(mapper.ConfigurationProvider);
 
-        var pagedOrders = await PagedList<Order>.CreateAsync(ordersQuery, orderParams.PageNumber, orderParams.PageSize);
+        var pagedOrders = await PagedList<UsersOrderDTO>.CreateAsync(ordersQuery, orderParams.PageNumber, orderParams.PageSize);
 
         var orderListDTO = ordersQuery.ToList();
 
-        return new PagedList<Order>
+        return new PagedList<UsersOrderDTO>
                 (
                     orderListDTO,
                     pagedOrders.TotalCount,
@@ -76,15 +104,8 @@ public class OrderRepository(CustomDbcontext context, IMapper mapper,ILogger<Ord
         return await context.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> UpdateOrderAsync(OrderCreateRequestDTO order)
-    {
-        context.Orders.Update(mapper.Map<Order>(order));
-        return await SaveAsync();
-    }
+  
     #endregion
 
-    public async Task<bool> OrderExisit(Guid orderId)
-    {
-        return await context.Orders.AnyAsync(x => x.Id == orderId);
-    }
+    public async Task<bool> OrderExisit(Guid orderId)=>  await context.Orders.AnyAsync(x => x.Id == orderId);
 }

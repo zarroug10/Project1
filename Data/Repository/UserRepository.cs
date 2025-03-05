@@ -1,10 +1,10 @@
 
 using System.Linq;
+
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using web.Data;
+
 using web.DTO;
 using web.Entities;
 using web.Helpers.Pagination;
@@ -16,20 +16,23 @@ namespace web.Data.Repository;
 public class UserRepository(CustomDbcontext context, IMapper mapper) : IUserRepository
 {
     #region Linq To Entity
-    public async Task<UserDTO?> GetUserById(Guid? userId)
+    public async Task<UserDTO?> GetUserById(string? userId)
     {
         var user = await context.Users.Include(x=> x.Orders)
-                                    .Where(x => x.Id == userId).FirstOrDefaultAsync();
-        var mappedUser = mapper.Map<UserDTO>(user);
-        return mappedUser;
+                                    .Where(x => x.Id.ToString() == userId)
+                                    .ProjectTo<UserDTO>(mapper.ConfigurationProvider)
+                                    .FirstOrDefaultAsync();
+        return user;
     }
 
     public async Task<UserDTO?> GetUserByUsername(string username)
     {
         var user = await context.Users.Include(x=> x.Orders)
-                                .Where(x=> x.Name.ToLower() == username.ToLower()).FirstOrDefaultAsync();
-        var mappedUser = mapper.Map<UserDTO>(user);
-        return mappedUser;
+                                .Where(x=> x.Name.ToLower() == username.ToLower())
+                                .ProjectTo<UserDTO>(mapper.ConfigurationProvider)
+                                .FirstOrDefaultAsync();
+
+        return user;
     }
 
     public async Task<PagedList<UserDTO>> GetUsers(UserParams userParams)
@@ -75,8 +78,5 @@ public class UserRepository(CustomDbcontext context, IMapper mapper) : IUserRepo
     }
 
     #endregion
-    public async Task<bool> UserExist(string username)
-    {
-        return await context.Users.AnyAsync(c => c.Name.ToLower() == username.ToLower());
-    }
+    public async Task<bool> UserExist(string username) => await context.Users.AnyAsync(c => c.Name.ToLower() == username.ToLower());
 }

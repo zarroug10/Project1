@@ -7,17 +7,17 @@ namespace web.Interfaces;
 
     public interface IOrderRepository
     {
-        Task<PagedList<Order>> GetOrdersAsync(OrderParams orderParams);
+        Task<PagedList<UsersOrderDTO>> GetOrdersAsync(OrderParams orderParams);
 
         Task<UsersOrderDTO> GetOrderByIdAsync(Guid orderId);
 
         Task<bool> OrderExisit(Guid orderId);
 
         Task CreateOrderAsync(OrderCreateRequestDTO order);
-        
-        Task<bool> UpdateOrderAsync(OrderCreateRequestDTO order);
 
-        Task DeleteOrderAsync(string? orderId);
+        Task UpdateOrderStatus(Guid? orderId);
+
+        public void DeleteOrder(Order order);
 
         Task<bool> SaveAsync();
 }

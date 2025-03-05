@@ -38,6 +38,22 @@
   },
   {
     "ContainingType": "web.Controllers.OrderController",
+    "Method": "Delivered",
+    "RelativePath": "api/Order",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Nullable\u00601[[System.Guid, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "web.Controllers.OrderController",
     "Method": "GetOrderByUser",
     "RelativePath": "api/Order/{userId}",
     "HttpMethod": "GET",
@@ -46,12 +62,37 @@
     "Parameters": [
       {
         "Name": "userId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
-        "Name": "Search",
+        "Name": "Id",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrderName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrderDate",
+        "Type": "System.DateOnly",
+        "IsRequired": false
+      },
+      {
+        "Name": "isDelivered",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "CustomerId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OrderlineItem",
+        "Type": "System.Collections.Generic.ICollection\u00601[[web.Entities.OrderLine, web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": false
       },
       {
@@ -161,7 +202,7 @@
     "Parameters": [
       {
         "Name": "customerId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -203,7 +244,7 @@
     "Parameters": [
       {
         "Name": "userId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
